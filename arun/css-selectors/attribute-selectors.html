@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: rgb(221, 221, 221);
+      }
+      form {
+        background-color: #fff;
+        width: 600px;
+        margin: 0 auto;
+        border: 1px solid lightgray;
+        padding: 20px;
+        border-radius: 10px;
+      }
+      form > div {
+        margin-bottom: 10px;
+      }
+
+      form > div > .form-label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input.form-control {
+        width: 100%;
+      }
+
+      /* Simple attribute selector 
+      button[class] {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+      } */
+
+      /* Exact value matching 
+      button[type="submit"] {
+        background-color: green;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+        */
+
+      /* contains word */
+      button[class|="btn"] {
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* contains substring */
+      button[class~="btn-primary"] {
+        background-color: green;
+      }
+
+      button[class~="btn-secondary"] {
+        background-color: red;
+      }
+
+      /* starts with */
+      a[href^="https"] {
+        color: red;
+        text-decoration: none;
+      }
+
+      /* ends with */
+      a[href$=".net"] {
+        color: green;
+        text-decoration: none;
+      }
+
+      /* contains substring */
+      a[href*="jaskaran"] {
+        color: orange;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Attribute Selectors</h1>
+    <!-- starting of the form -->
+    <form action="">
+      <div>
+        <label for="name" class="form-label">Name</label>
+        <input type="text" id="name" name="name" class="form-control" />
+      </div>
+      <div>
+        <label for="email" class="form-label"> Email</label>
+        <input type="email" id="email" name="email" class="form-control" />
+      </div>
+      <div>
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+        />
+      </div>
+      <div>
+        <input type="checkbox" name="terms" id="terms" />
+        <label for="terms">I agree to the terms and conditions</label>
+      </div>
+      <div>
+        <input type="radio" name="gender" id="male" value="male" />
+        <label for="male">Male</label>
+        <input type="radio" name="gender" id="female" value="female" />
+        <label for="female">Female</label>
+
+        <a href="https://www.google.com">Google</a>
+        <a href="http://www.facebook.com">Facebook</a>
+
+        <a href="https://www.jaskaran.in">Jaskaran</a>
+        <a href="https://www.docuid.net">Docuid</a>
+      </div>
+      <div>
+        <button type="submit" class="btn-primary">Submit</button>
+        <button type="reset" class="btn-secondary">Reset</button>
+      </div>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+</head>
+<body>
+
+    <h1 class="text-2xl font-bold text-center">Todos</h1>
+    <div id="todoList" class="flex flex-col gap-2 px-2 py-2"></div>
+
+    <script>
+
+        const todoListElement = document.getElementById("todoList");
+        let todosFromLocalStorage = localStorage.getItem("todos");
+
+        let todoHtml = ""
+        let todos = todosFromLocalStorage ? JSON.parse(todosFromLocalStorage) : [
+            {
+                id:0,
+                title:"this is my first todo",
+                isCompleted:false
+            },
+            {
+                id:1,
+                title:"this is my second todo",
+                isCompleted:false
+            },
+            {
+                id:2,
+                title:"this is my third todo",
+                isCompleted:false
+            },
+            {
+                id:3,
+                title:"this is my fourth todo",
+                isCompleted:false
+            },
+            {
+                id:4,
+                title:"this is my fifth todo",
+                isCompleted:false
+            },
+        ]
+
+        todos.forEach(todo => {
+            todoHtml += `<div class="flex items-center gap-2 p-2 mt-2 rounded-md bg-gray-200">
+                <input 
+                    type="checkbox" 
+                    class="checkbox-item" 
+                    data-id="${todo.id}"
+                    ${todo.isCompleted === true ? "checked" : ""} />
+                <span>${todo.title}</span>
+                </div>`;
+        });
+
+        todoListElement.innerHTML = todoHtml;
+
+        let todosString = JSON.stringify(todos);
+        localStorage.setItem("todos",todosString);
+
+        let checkboxItems = document.querySelectorAll(".checkbox-item");
+
+        checkboxItems.forEach(checkboxItem => {
+            checkboxItem.addEventListener("change",function(){
+                let todoId = checkboxItem.getAttribute("data-id");
+                handleCheckbox(todoId,checkboxItem.checked);
+            })
+        })
+
+        function handleCheckbox(todoId,isCompleted){
+           let updatedTodos = todos.map((todo) => {
+                if(todo.id == todoId){
+                    todo.isCompleted = isCompleted;
+                }
+                return todo;
+            })
+            let updatedTodosString = JSON.stringify(updatedTodos);
+            localStorage.setItem("todos",updatedTodosString);
+        }
+    </script>
+</body>
+</html>
