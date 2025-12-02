@@ -13,11 +13,20 @@
     <div id="todoList" class="flex flex-col gap-2 px-2 py-2"></div>
 
     <script>
-
+        // 1. Select the HTML element where we want to show our list of todos
+        // We use document.getElementById to find the div with id="todoList"
         const todoListElement = document.getElementById("todoList");
+
+        // 2. Try to get any existing todos from the browser's Local Storage
+        // Local Storage allows us to save data in the browser that persists even after refreshing the page
         let todosFromLocalStorage = localStorage.getItem("todos");
 
         let todoHtml = ""
+        
+        // 3. Initialize our todos list
+        // We check if 'todosFromLocalStorage' has any data:
+        // - If YES (true): We convert the text string back into a JavaScript array using JSON.parse()
+        // - If NO (false): We use a default list of dummy todos
         let todos = todosFromLocalStorage ? JSON.parse(todosFromLocalStorage) : [
             {
                 id:0,
@@ -46,7 +55,10 @@
             },
         ]
 
+        // 4. Loop through each todo item in our array to create the HTML for it
         todos.forEach(todo => {
+            // We append (add) a new div string to 'todoHtml' for each todo
+            // We use a template literal (backticks `) to easily insert variables like ${todo.id}
             todoHtml += `<div class="flex items-center gap-2 p-2 mt-2 rounded-md bg-gray-200">
                 <input 
                     type="checkbox" 
@@ -55,29 +67,50 @@
                     ${todo.isCompleted === true ? "checked" : ""} />
                 <span>${todo.title}</span>
                 </div>`;
+                // Note: 
+                // - data-id="${todo.id}" stores the unique ID on the checkbox so we know which one it is later
+                // - ${todo.isCompleted === true ? "checked" : ""} checks the box if the todo is already completed
         });
 
+        // 5. Put the generated HTML inside our main todoList container
         todoListElement.innerHTML = todoHtml;
 
+        // 6. Save the current list of todos to Local Storage
+        // We must convert the JavaScript array to a string using JSON.stringify() before saving
         let todosString = JSON.stringify(todos);
         localStorage.setItem("todos",todosString);
 
+        // 7. Select all the checkboxes we just created
+        // document.querySelectorAll gives us a list of all elements with the class "checkbox-item"
         let checkboxItems = document.querySelectorAll(".checkbox-item");
 
+        // 8. Add a "change" event listener to each checkbox
+        // This lets us run code whenever a user checks or unchecks a box
         checkboxItems.forEach(checkboxItem => {
             checkboxItem.addEventListener("change",function(){
+                // Get the unique ID we stored in the data-id attribute
                 let todoId = checkboxItem.getAttribute("data-id");
+                
+                // Call our function to update the data, passing the ID and the new checked status (true/false)
                 handleCheckbox(todoId,checkboxItem.checked);
             })
         })
 
+        // 9. Function to handle updating a todo when it's checked/unchecked
         function handleCheckbox(todoId,isCompleted){
+           // We use .map() to create a new array with the updated todo
            let updatedTodos = todos.map((todo) => {
+                // If this is the todo that was clicked (ids match)
                 if(todo.id == todoId){
+                    // Update its isCompleted property
                     todo.isCompleted = isCompleted;
                 }
+                // Return the todo (whether updated or not) to the new array
                 return todo;
             })
+            
+            // 10. Save the updated list back to Local Storage
+            // This ensures the new state is remembered if the page is reloaded
             let updatedTodosString = JSON.stringify(updatedTodos);
             localStorage.setItem("todos",updatedTodosString);
         }
