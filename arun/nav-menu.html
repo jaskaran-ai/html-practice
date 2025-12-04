@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar</title>
+    <style>
+        
+         nav{
+            background-color: rgb(43, 43, 43);
+         }
+         nav ul{
+            list-style: none;
+         }
+        nav > ul > li{
+          display: inline-block;
+          position: relative;
+         }
+         nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 15px;
+            display: block;
+         }
+         .dropdown {
+            position: absolute;
+            background-color: rgb(43, 43, 43);
+            padding: 10px;
+            min-width: 150px;
+            z-index: 1;
+            display: none;
+         }
+         .dropdown li{
+            border-bottom: 1px solid white;
+         }
+         .dropdown li:last-child {
+            border-bottom: none;
+         }
+         nav ul li:hover{
+            background-color: rgb(63, 63, 63);
+         }
+         nav ul li:hover .dropdown {
+            display: block;
+         }
+        </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="#question-bank">Question Bank</a></a></li>
+        <li><a href="#mock-exam">Mock Exam</a></li>
+        
+        <li>
+            <a href="#ace-tools">Ace Tools</a>
+            <ul class="dropdown">
+                <li><a href="#all-tools">All Tools</a></li>
+                <li><a href="#flash-cards">Flash Cards</a></li>
+                <li><a href="#eassy-analysis">Eassy Analysis</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <a href="#community">Community</a>
+            <ul class="dropdown">
+                <li><a href="#discussion-forum">Discussion Forum</a></li>
+                <li><a href="#ask-a-question">Ask a Question</a></li>
+                <li><a href="#share-your-thoughts">Share Your Thoughts</a></li>
+            </ul>
+        </li>
+
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </body>
+</html>

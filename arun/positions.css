@@ -9,12 +9,13 @@ body {
   border: 2px solid #333;
   padding: 20px;
   background: #fff;
+  position: relative;
 }
 
 .box {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
   background-color: dodgerblue;
   margin-top: 5px;
 }
@@ -22,19 +23,55 @@ body {
 .box1 {
   background-color: coral;
   top: 20px;
-  left: 200px;
+  left: 100px;
+  z-index: 2;
 }
 
 .box2 {
   background-color: red;
-  top: 40px;
-  left: 400px;
+  top: 20px;
+  left: 100px;
 }
 
 .box3 {
   background-color: yellow;
+  position: absolute;
+  z-index: 1;
+  top: 20px;
+  left: 100px;
 }
 
 .box4 {
   background-color: green;
+}
+
+.bell-icon {
+  position: relative;
+  padding: 10px;
+  width: 64px;
+  height: 64px;
+  background-color: #25d366;
+  margin-top: 20px;
+  border-radius: 20%;
+  box-shadow: 2px 2px 10px gray;
+}
+
+.bell-icon:hover {
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.bell-icon-count {
+  position: absolute;
+  box-shadow: 2px 2px 10px gray;
+  background-color: red;
+  border-radius: 70%;
+  padding: 5px;
+  top: -15px;
+  right: -10px;
+  color: white;
+  height: 20px;
+  width: 20px;
+  text-align: center;
 }
