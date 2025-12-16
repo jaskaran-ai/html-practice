@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .timer-display {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Play icon */
+        .play-icon {
+            width: 0;
+            height: 0;
+            border-left: 8px solid white;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+        
+        /* X icon */
+        .x-icon {
+            position: relative;
+            width: 16px;
+            height: 16px;
+        }
+        .x-icon::before,
+        .x-icon::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 16px;
+            background-color: black;
+            top: 50%;
+            left: 50%;
+        }
+        .x-icon::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .x-icon::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-200 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-black text-center mb-8">Pomodoro Timer</h1>
+        
+        <!-- Mode Selection -->
+        <div class="flex gap-2 mb-8">
+            <button 
+                id="focusModeBtn" 
+                class="flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-gray-800 text-white"
+            >
+                Focus
+            </button>
+            <button 
+                id="breakModeBtn" 
+                class="flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-white text-black border-2 border-gray-300"
+            >
+                Break
+            </button>
+        </div>
+        
+        <!-- Timer Display -->
+        <div class="text-center mb-8">
+            <div id="timerDisplay" class="text-7xl font-bold text-black timer-display mb-2">30:00</div>
+        </div>
+        
+        <!-- Time Adjustment Section -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+            <!-- Focus Time Controls -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3 text-center">Focus Time</label>
+                <div class="flex items-center justify-center gap-2">
+                    <button 
+                        id="focusMinusBtn" 
+                        class="w-10 h-10 rounded-lg bg-white border-2 border-gray-300 text-black font-bold text-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >
+                        −
+                    </button>
+                    <div class="w-20 h-10 rounded-lg bg-white border-2 border-gray-300 flex items-center justify-center font-semibold text-black">
+                        <span id="focusTimeDisplay">30m</span>
+                    </div>
+                    <button 
+                        id="focusPlusBtn" 
+                        class="w-10 h-10 rounded-lg bg-white border-2 border-gray-300 text-black font-bold text-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >
+                        +
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Break Time Controls -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3 text-center">Break Time</label>
+                <div class="flex items-center justify-center gap-2">
+                    <button 
+                        id="breakMinusBtn" 
+                        class="w-10 h-10 rounded-lg bg-white border-2 border-gray-300 text-black font-bold text-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >
+                        −
+                    </button>
+                    <div class="w-20 h-10 rounded-lg bg-white border-2 border-gray-300 flex items-center justify-center font-semibold text-black">
+                        <span id="breakTimeDisplay">5m</span>
+                    </div>
+                    <button 
+                        id="breakPlusBtn" 
+                        class="w-10 h-10 rounded-lg bg-white border-2 border-gray-300 text-black font-bold text-xl hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >
+                        +
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-4">
+            <button 
+                id="startPauseBtn" 
+                class="flex-1 py-4 px-6 rounded-lg bg-gray-800 text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 transition-colors"
+            >
+                <span class="play-icon"></span>
+                <span id="startPauseText">Start</span>
+            </button>
+            <button 
+                id="resetBtn" 
+                class="flex-1 py-4 px-6 rounded-lg bg-white border-2 border-gray-300 text-black font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+            >
+                <span class="x-icon"></span>
+                <span>Reset</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            mode: 'focus', // 'focus' or 'break'
+            focusTime: 30, // minutes
+            breakTime: 5, // minutes
+            currentTime: 30 * 60, // seconds
+            isRunning: false,
+            intervalId: null
+        };
+
+        // DOM elements
+        const focusModeBtn = document.getElementById('focusModeBtn');
+        const breakModeBtn = document.getElementById('breakModeBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const focusTimeDisplay = document.getElementById('focusTimeDisplay');
+        const breakTimeDisplay = document.getElementById('breakTimeDisplay');
+        const focusMinusBtn = document.getElementById('focusMinusBtn');
+        const focusPlusBtn = document.getElementById('focusPlusBtn');
+        const breakMinusBtn = document.getElementById('breakMinusBtn');
+        const breakPlusBtn = document.getElementById('breakPlusBtn');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const startPauseText = document.getElementById('startPauseText');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Audio context for sound notification
+        let audioContext = null;
+
+        function playNotificationSound() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(state.currentTime);
+        }
+
+        // Update time adjustment displays
+        function updateTimeDisplays() {
+            focusTimeDisplay.textContent = `${state.focusTime}m`;
+            breakTimeDisplay.textContent = `${state.breakTime}m`;
+        }
+
+        // Update mode buttons styling
+        function updateModeButtons() {
+            if (state.mode === 'focus') {
+                focusModeBtn.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-gray-800 text-white';
+                breakModeBtn.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-white text-black border-2 border-gray-300';
+            } else {
+                focusModeBtn.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-white text-black border-2 border-gray-300';
+                breakModeBtn.className = 'flex-1 py-3 px-4 rounded-lg font-semibold transition-colors bg-gray-800 text-white';
+            }
+        }
+
+        // Update start/pause button
+        function updateStartPauseButton() {
+            if (state.isRunning) {
+                startPauseText.textContent = 'Pause';
+                startPauseBtn.innerHTML = '<span class="play-icon"></span><span id="startPauseText">Pause</span>';
+            } else {
+                startPauseText.textContent = 'Start';
+                startPauseBtn.innerHTML = '<span class="play-icon"></span><span id="startPauseText">Start</span>';
+            }
+        }
+
+        // Set current time based on mode
+        function setTimeForMode() {
+            if (state.mode === 'focus') {
+                state.currentTime = state.focusTime * 60;
+            } else {
+                state.currentTime = state.breakTime * 60;
+            }
+            updateTimerDisplay();
+        }
+
+        // Timer countdown
+        function startTimer() {
+            if (state.intervalId) {
+                clearInterval(state.intervalId);
+            }
+
+            state.intervalId = setInterval(() => {
+                if (state.currentTime > 0) {
+                    state.currentTime--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(state.intervalId);
+                    state.intervalId = null;
+                    state.isRunning = false;
+                    updateStartPauseButton();
+                    playNotificationSound();
+                    
+                    // Auto-switch mode
+                    state.mode = state.mode === 'focus' ? 'break' : 'focus';
+                    setTimeForMode();
+                    updateModeButtons();
+                }
+            }, 1000);
+        }
+
+        // Stop timer
+        function stopTimer() {
+            if (state.intervalId) {
+                clearInterval(state.intervalId);
+                state.intervalId = null;
+            }
+        }
+
+        // Event listeners
+        focusModeBtn.addEventListener('click', () => {
+            if (state.mode !== 'focus' && !state.isRunning) {
+                state.mode = 'focus';
+                setTimeForMode();
+                updateModeButtons();
+            }
+        });
+
+        breakModeBtn.addEventListener('click', () => {
+            if (state.mode !== 'break' && !state.isRunning) {
+                state.mode = 'break';
+                setTimeForMode();
+                updateModeButtons();
+            }
+        });
+
+        focusMinusBtn.addEventListener('click', () => {
+            if (!state.isRunning && state.focusTime > 1) {
+                state.focusTime--;
+                updateTimeDisplays();
+                if (state.mode === 'focus') {
+                    setTimeForMode();
+                }
+            }
+        });
+
+        focusPlusBtn.addEventListener('click', () => {
+            if (!state.isRunning && state.focusTime < 60) {
+                state.focusTime++;
+                updateTimeDisplays();
+                if (state.mode === 'focus') {
+                    setTimeForMode();
+                }
+            }
+        });
+
+        breakMinusBtn.addEventListener('click', () => {
+            if (!state.isRunning && state.breakTime > 1) {
+                state.breakTime--;
+                updateTimeDisplays();
+                if (state.mode === 'break') {
+                    setTimeForMode();
+                }
+            }
+        });
+
+        breakPlusBtn.addEventListener('click', () => {
+            if (!state.isRunning && state.breakTime < 60) {
+                state.breakTime++;
+                updateTimeDisplays();
+                if (state.mode === 'break') {
+                    setTimeForMode();
+                }
+            }
+        });
+
+        startPauseBtn.addEventListener('click', () => {
+            if (state.isRunning) {
+                stopTimer();
+                state.isRunning = false;
+            } else {
+                startTimer();
+                state.isRunning = true;
+            }
+            updateStartPauseButton();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            stopTimer();
+            state.isRunning = false;
+            setTimeForMode();
+            updateStartPauseButton();
+        });
+
+        // Initialize
+        updateTimerDisplay();
+        updateTimeDisplays();
+        updateModeButtons();
+        updateStartPauseButton();
+    </script>
+</body>
+</html>
