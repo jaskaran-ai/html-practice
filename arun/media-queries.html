@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Queries</title>
+    <style>
+      body {
+        background-color: red;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .box {
+        width: 100px;
+        height: 100px;
+      }
+
+      .box-1 {
+        background-color: lightgreen;
+      }
+
+      .box-2 {
+        background-color: lightcoral;
+      }
+
+      .box-3 {
+        background-color: lightyellow;
+      }
+
+      .box-4 {
+        background-color: lightpink;
+      }
+
+      .box-5 {
+        background-color: purple;
+      }
+
+      .box-6 {
+        background-color: brown;
+      }
+
+      .box-7 {
+        background-color: gray;
+      }
+
+      .box-8 {
+        background-color: dodgerblue;
+      }
+
+      .box-9 {
+        background-color: white;
+      }
+      .box-10 {
+        background-color: orange;
+      }
+
+      @media (min-width: 480px) {
+        body {
+          background-color: lightblue;
+        }
+        h1 {
+          font-size: 1.5rem;
+          color: pink;
+        }
+      }
+
+      @media (max-width: 425px) {
+        .box {
+          width: 100%;
+          height: 200px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Media Queries</h1>
+
+    <div class="container">
+      <div class="box box-1">box-1</div>
+      <div class="box box-2">box-2</div>
+      <div class="box box-3">box-3</div>
+      <div class="box box-4">box-4</div>
+      <div class="box box-5">box-5</div>
+      <div class="box box-6">box-6</div>
+      <div class="box box-7">box-7</div>
+      <div class="box box-8">box-8</div>
+      <div class="box box-9">box-9</div>
+    </div>
+  </body>
+</html>

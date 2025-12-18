@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-muted h-screen flex items-center justify-center">
+    <div
+      class="bg-white p-4 rounded-md border border-slate-300 max-w-md mx-auto"
+    >
+      <h2 class="text-2xl font-bold text-center">API Demo</h2>
+      <p class="text-gray-500 my-10 text-center text-2xl" id="jokeDisplay">
+        here will be joke
+      </p>
+      <button
+        class="bg-blue-500 text-white px-4 py-2 rounded-md w-full text-sm"
+        id="getRandomJokeButton"
+      >
+        Get Random Joke
+      </button>
+    </div>
+
+    <script>
+      let getRandomJokeButtonElement = document.getElementById(
+        "getRandomJokeButton"
+      );
+
+      let jokeDisplayElement = document.getElementById("jokeDisplay");
+
+      const getRandomJoke = () => {
+        let apiResponse = fetch(
+          "https://api.freeapi.app/api/v1/public/randomjokes/joke/random"
+        );
+        console.log(apiResponse);
+
+        apiResponse
+          .then((response) => {
+            return response.json();
+          })
+          .then((jsonData) => {
+            console.log(jsonData.data.content);
+            jokeDisplayElement.innerText = jsonData.data.content;
+          })
+          .catch((error) => {
+            console.log("error in getRandomJoke");
+            console.log(error);
+          });
+      };
+
+      getRandomJokeButtonElement.addEventListener("click", getRandomJoke);
+
+      getRandomJoke();
+    </script>
+  </body>
+</html>
