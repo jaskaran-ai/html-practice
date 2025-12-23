@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SimpleWeather - WeatherAPI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 3px solid #e5e7eb;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border-top-color: #3b82f6;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="flex items-center justify-center p-4">
+    <main class="w-full max-w-md">
+      <!-- Card Container -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Header Section -->
+        <div class="bg-blue-600 p-5 text-center">
+          <h1 class="text-white text-xl font-semibold">Weather</h1>
+        </div>
+
+        <!-- Search Section -->
+        <div class="p-5 border-b">
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="cityInput"
+              placeholder="Enter city name..."
+              class="flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button
+              id="searchBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded font-medium"
+            >
+              Search
+            </button>
+          </div>
+          <p
+            id="errorMsg"
+            class="text-red-600 text-sm mt-2 text-center hidden"
+          ></p>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading" class="hidden flex justify-center py-8">
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Weather Result Section -->
+        <div id="weatherResult" class="hidden p-5">
+          <!-- Location & Icon -->
+          <div class="text-center mb-5">
+            <h2 id="cityName" class="text-xl font-semibold text-gray-800 mb-1">
+              City Name
+            </h2>
+            <p id="country" class="text-gray-500 text-sm mb-3">Country</p>
+            <img
+              id="weatherIcon"
+              src=""
+              alt="Weather Icon"
+              class="w-20 h-20 mx-auto"
+            />
+          </div>
+
+          <!-- Temperature -->
+          <div class="text-center mb-5">
+            <div class="flex items-baseline justify-center gap-1">
+              <span id="tempValue" class="text-5xl font-bold text-gray-800"
+                >--</span
+              >
+              <span id="tempUnit" class="text-2xl text-gray-500">°C</span>
+            </div>
+            <p
+              id="conditionText"
+              class="text-gray-600 text-base mt-2 capitalize"
+            >
+              Condition
+            </p>
+          </div>
+
+          <!-- Unit Toggle -->
+          <div class="flex justify-center mb-5">
+            <button
+              id="unitToggle"
+              class="text-sm text-blue-600 hover:text-blue-700 underline"
+            >
+              Show in Fahrenheit
+            </button>
+          </div>
+
+          <!-- Grid Details -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Wind -->
+            <div
+              class="bg-gray-50 p-4 rounded border border-gray-200 text-center"
+            >
+              <span class="text-xs text-gray-500 uppercase block mb-1"
+                >Wind</span
+              >
+              <span id="windSpeed" class="text-base font-semibold text-gray-800"
+                >-- kph</span
+              >
+            </div>
+            <!-- Humidity -->
+            <div
+              class="bg-gray-50 p-4 rounded border border-gray-200 text-center"
+            >
+              <span class="text-xs text-gray-500 uppercase block mb-1"
+                >Humidity</span
+              >
+              <span id="humidity" class="text-base font-semibold text-gray-800"
+                >--%</span
+              >
+            </div>
+          </div>
+
+          <!-- Last Updated -->
+          <p class="text-center text-xs text-gray-400 mt-4">
+            Last updated: <span id="lastUpdated">--</span>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // --- API Configuration ---
+      const API_KEY = "09e7a1b8b2844ba990b110125243108";
+      const API_URL = "https://api.weatherapi.com/v1/current.json";
+
+      // --- State ---
+      let currentData = null; // Store the API response
+      let isCelsius = true;
+
+      // --- DOM Elements ---
+      const cityInput = document.getElementById("cityInput");
+      const searchBtn = document.getElementById("searchBtn");
+      const weatherResult = document.getElementById("weatherResult");
+      const loading = document.getElementById("loading");
+      const errorMsg = document.getElementById("errorMsg");
+      const unitToggle = document.getElementById("unitToggle");
+
+      // Output Elements
+      const cityNameEl = document.getElementById("cityName");
+      const countryEl = document.getElementById("country");
+      const tempValueEl = document.getElementById("tempValue");
+      const tempUnitEl = document.getElementById("tempUnit");
+      const conditionTextEl = document.getElementById("conditionText");
+      const weatherIconEl = document.getElementById("weatherIcon");
+      const windSpeedEl = document.getElementById("windSpeed");
+      const humidityEl = document.getElementById("humidity");
+      const lastUpdatedEl = document.getElementById("lastUpdated");
+
+      // --- Event Listeners ---
+      searchBtn.addEventListener("click", fetchWeather);
+      cityInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") fetchWeather();
+      });
+      unitToggle.addEventListener("click", toggleUnit);
+
+      // --- Main Logic ---
+
+      async function fetchWeather() {
+        const city = cityInput.value.trim();
+        if (!city) {
+          showError("Please enter a city name.");
+          return;
+        }
+
+        // UI Reset
+        hideError();
+        weatherResult.classList.add("hidden");
+        loading.classList.remove("hidden");
+
+        try {
+          // Construct URL with parameters
+          const url = `${API_URL}?key=${API_KEY}&q=${encodeURIComponent(city)}`;
+
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error("City not found");
+          }
+
+          const data = await response.json();
+
+          // Store data locally so we can toggle units without re-fetching
+          currentData = data;
+
+          // Render
+          renderWeather();
+        } catch (error) {
+          showError(error.message || "Something went wrong");
+        } finally {
+          loading.classList.add("hidden");
+        }
+      }
+
+      function renderWeather() {
+        if (!currentData) return;
+
+        // 1. Location Data
+        // Structure: data.location.name, data.location.region, data.location.country
+        const loc = currentData.location;
+        cityNameEl.textContent = `${loc.name}, ${loc.region}`;
+        countryEl.textContent = loc.country;
+
+        // 2. Current Weather Data
+        // Structure: data.current.temp_c, data.current.condition.text
+        const curr = currentData.current;
+
+        // Note: API provides both temp_c and temp_f, so we don't need to do math!
+        updateTempDisplay(curr.temp_c, curr.temp_f);
+
+        conditionTextEl.textContent = curr.condition.text;
+
+        // Icon: The API returns //cdn.weatherapi.com...
+        // We need to add https: to make sure it loads in the browser
+        weatherIconEl.src = "https:" + curr.condition.icon;
+
+        // 3. Details
+        windSpeedEl.textContent = `${curr.wind_kph} kph`;
+        humidityEl.textContent = `${curr.humidity}%`;
+
+        // Format the time nicely
+        lastUpdatedEl.textContent = curr.last_updated;
+
+        // Show Result
+        weatherResult.classList.remove("hidden");
+      }
+
+      function updateTempDisplay(tempC, tempF) {
+        if (isCelsius) {
+          tempValueEl.textContent = tempC;
+          tempUnitEl.textContent = "°C";
+          unitToggle.textContent = "Show in Fahrenheit";
+        } else {
+          tempValueEl.textContent = tempF;
+          tempUnitEl.textContent = "°F";
+          unitToggle.textContent = "Show in Celsius";
+        }
+      }
+
+      function toggleUnit() {
+        if (!currentData) return;
+        isCelsius = !isCelsius;
+        // Re-render just the temperature part
+        updateTempDisplay(
+          currentData.current.temp_c,
+          currentData.current.temp_f
+        );
+      }
+
+      // --- Helpers ---
+
+      function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove("hidden");
+      }
+
+      function hideError() {
+        errorMsg.classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>
