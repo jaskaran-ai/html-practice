@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Products</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-zinc-100">
+    <h1 class="text-8xl font-bold text-center my-10">Random Products</h1>
+    <div id="randomProductsContainer" class="flex flex-wrap gap-4 px-10"></div>
+
+    <script>
+      //   function getRandomProductsOld() {
+      //     let apiResponse = fetch(
+      //       "https://api.freeapi.app/api/v1/public/randomproducts"
+      //     );
+
+      //     console.log({ apiResponse });
+
+      //     apiResponse
+      //       .then((response) => {
+      //         console.log({ response });
+      //         return response.json();
+      //       })
+      //       .then((jsonData) => {
+      //         console.log({ jsonData });
+      //       })
+      //       .catch((error) => {
+      //         console.log("error in getRandomProducts");
+      //         console.log({ error });
+      //       })
+      //       .finally(() => {
+      //         console.log("finally");
+      //       });
+      //   }
+
+      //   getRandomProductsOld();
+
+      const randomProductsContainer = document.getElementById(
+        "randomProductsContainer"
+      );
+
+      async function getRandomProducts() {
+        try {
+          let apiResponse = await fetch(
+            "https://api.freeapi.app/api/v1/public/randomproducts"
+          );
+
+          console.log({ apiResponse });
+
+          let jsonData = await apiResponse.json();
+
+          console.log({ jsonData });
+
+          displayRandomProducts(jsonData.data.data);
+        } catch (error) {
+          console.log("error in getRandomProducts");
+          console.log({ error });
+        } finally {
+          console.log("finally");
+        }
+      }
+
+      getRandomProducts();
+
+      function displayRandomProducts(products) {
+        console.log({ products });
+        let html = "";
+        products.forEach((product) => {
+          html += `
+      <div class="p-4 m-4 bg-white rounded-[80px] max-w-xl">
+        <img
+          src="${product.thumbnail}"
+          alt=""
+          srcset=""
+          class="w-full rounded-[80px] h-[400px] object-cover"
+        />
+        <div class="pb-2 mt-4 px-6">
+            <div class="flex items-center justify-between gap-12">
+                <h1 class="text-2xl font-bold">${product.title}</h1>
+                <div class="flex items-center justify-start gap-2 flex-wrap">
+              <p class="text-xs bg-zinc-800 text-white p-2 rounded-full">$ ${product.price.toFixed(
+                2
+              )}</p>
+            
+        </div>
+</div>
+            <p class="text-sm text-zinc-500 my-4 max-w-md">
+              ${product.description}
+            </p>
+
+            <div class="flex items-center justify-center gap-2 flex-wrap">
+             
+              <p class="text-xs border-1 border-zinc-800 text-zinc-800 p-2 px-4 rounded-full hover:bg-zinc-800 transition-all duration-300 cursor-pointer hover:text-white">${
+                product.brand
+              }</p>
+              <p class="text-xs border-1 border-zinc-800 text-zinc-800 p-2 px-4 rounded-full hover:bg-zinc-800 transition-all duration-300 cursor-pointer hover:text-white">
+                ${product.category}
+              </p>
+              <p class="text-xs border-1 border-zinc-800 text-zinc-800 p-2 px-4 rounded-full hover:bg-zinc-800 transition-all duration-300 cursor-pointer hover:text-white">
+                Rating: ${product.rating}/5
+              </p>
+        </div>
+        </div>
+      </div>
+        `;
+        });
+        randomProductsContainer.innerHTML = html;
+      }
+    </script>
+  </body>
+</html>

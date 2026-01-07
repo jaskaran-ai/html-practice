@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Demo</title>
+    <style>
+      .grid-container {
+        border: 3px solid #f00;
+        display: grid;
+        grid-template-columns: 2fr repeat(6, auto);
+        /* grid-template-rows: 1fr 100px 100px 100px; */
+        /* row-gap: 10px;
+        column-gap: 30px; */
+        gap: 30px 10px;
+        padding: 20px;
+        margin: 20px;
+      }
+      .grid-item {
+        border: 3px solid #0f0;
+        /* background-color: #f0f0f0; */
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Grid Demo</h1>
+
+    <div class="grid-container">
+      <div class="grid-item">arun</div>
+      <div class="grid-item">jaskaran</div>
+      <div class="grid-item">
+        lorem ipsum dolor sit amet consectetur adipisicing elit. Earum quam,
+        laborum natus at eaque esse quisquam non odit placeat distinctio
+        quaerat, ad molestiae atque exercitationem rerum, iure reprehenderit
+        sed? Ipsam!
+      </div>
+      <div class="grid-item">lorem</div>
+      <div class="grid-item">5</div>
+      <div class="grid-item">6</div>
+      <div class="grid-item">7</div>
+      <div class="grid-item">8</div>
+      <div class="grid-item">9</div>
+      <div class="grid-item">10</div>
+      <div class="grid-item">11</div>
+      <div class="grid-item">12</div>
+      <div class="grid-item">13</div>
+    </div>
+  </body>
+</html>

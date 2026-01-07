@@ -10,10 +10,12 @@
     <div class="bg-slate-100 h-screen w-full flex justify-center items-center">
       <!-- card -->
       <div
-        class="bg-white h-auto max-w-[620px] border border-red-500 p-4 rounded-2xl shadow-sm"
+        class="bg-white h-auto max-w-3xl border border-red-500 p-4 m-6 rounded-2xl shadow-sm"
       >
         <!-- header which contain name and photo -->
-        <section class="border border-blue-500 mt-2 flex gap-2 p-2">
+        <section
+          class="border border-blue-500 mt-2 flex flex-col gap-2 p-2 md:flex-row"
+        >
           <!-- first div for image -->
           <div class="border border-green-500 w-full h-full">
             <img src="https://placehold.co/600x400" alt="cat" srcset="" />
@@ -59,7 +61,7 @@
         <section class="mt-2 border border-red-500 p-2">
           <h1 class="text-2xl font-bold">Characteristics</h1>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-col lg:flex-row">
             <!-- first div for characteristics -->
             <div class="w-full border border-blue-500">
               <ul class="flex flex-col gap-2">
@@ -145,7 +147,9 @@
         </section>
 
         <!-- extra info section -->
-        <section class="mt-2 flex gap-2 p-2 border border-red-500">
+        <section
+          class="mt-2 flex gap-2 p-2 border border-red-500 flex flex-col md:flex-row"
+        >
           <div class="w-full border border-blue-500">first column</div>
           <div class="w-full border border-blue-500">second column</div>
           <div class="w-full border border-blue-500">third column</div>
