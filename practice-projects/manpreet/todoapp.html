@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <h1 class="text-2xl font-bold text-center">Todo App</h1>
+    <div class="flex gap-2 px-2 py-2 w-full items-center justify-end">
+        <div class="flex flex-col gap-2 w-full">
+            <label for="searchInput" class="text-sm font-bold">Search</label>
+            <input type="text" id="searchInput" placeholder="Search todos" class="border border-gray-300 rounded-md p-2">
+        </div>
+        <button id="searchBtn" class="bg-blue-500 text-white rounded-md p-2 h-10">Search</button>
+    </div>
+    <div id="todoList" class="flex flex-col gap-2 px-2 py-2"></div>
+
+    <script>
+        // 1. Select the HTML element where we want to show our list of todos
+        // We use document.getElementById to find the div with id="todoList"
+        const todoListElement = document.getElementById("todoList");
+
+        const searchInputElement = document.getElementById("searchInput");
+        const searchBtnElement = document.getElementById("searchBtn");
+
+
+        searchBtnElement.addEventListener("click", () => {
+            const searchValue = searchInputElement.value;
+            console.log(searchValue);
+            getTodos(searchValue);
+        });
+
+        // searchInputElement.addEventListener("keyup", (e) => {
+        //     const searchValue = searchInputElement.value;
+        //     console.log(searchValue);
+        //     setTimeout(() => {
+        //         getTodos(searchValue);
+        //     }, 2000);
+        // });
+
+        async function getTodos(searchValue = "") {
+            try{
+                let baseUrl = "https://api.freeapi.app/api/v1/todos";
+                if(searchValue !== ""){
+                    baseUrl += `?query=${searchValue}`;
+                }
+                const response = await fetch(baseUrl);
+                const data = await response.json();
+                console.log(data.data);
+                displayTodos(data.data);
+            }catch(error){
+                console.log(error);
+            }
+        }
+
+        
+        function displayTodos(todos) {
+            let html = "";
+            for(let todo of todos){
+                html += `<div class='p-2 bg-gray-200 rounded-md'>${todo.title}</div>`;
+            }
+            todoListElement.innerHTML = html;
+        }
+
+        // initialize the app by getting all todos
+        getTodos();
+    </script>
+</html>
